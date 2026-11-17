@@ -1,18 +1,42 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { SplashScreen, Stack } from "expo-router";
+import '../global.css'
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useContext, useEffect } from "react";
+import AuthProvider, { AuthContext } from "@/context/AuthContext";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync()
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
-  );
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
+  )
+}
+
+function RootNavigator() {
+  const { token, loading } = useContext(AuthContext)
+
+  useEffect(() => {
+    if (!loading) SplashScreen.hideAsync()
+  }, [loading])
+
+  if (loading) return null
+
+  const isLoggedIn = !!token
+
+  return (
+    <SafeAreaView className="flex-1">
+      <Stack screenOptions={{ headerShown: false, animation: "slide_from_left" }}>
+        <Stack.Protected guard={isLoggedIn}>
+          <Stack.Screen name="(app)" />
+        </Stack.Protected>
+
+        <Stack.Protected guard={!isLoggedIn}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
+      </Stack>
+    </SafeAreaView>
+  )
 }
