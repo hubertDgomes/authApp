@@ -1,9 +1,11 @@
 import { AuthContext } from '@/context/AuthContext'
+import { Link, useRouter } from 'expo-router'
 import { useContext } from 'react'
 import { Pressable, Text, View } from 'react-native'
 
 export default function Home() {
   const { signOut } = useContext(AuthContext)
+  const router = useRouter()
 
   return (
     <View className="flex-1 justify-between bg-[#F5F4F0] px-6 pb-8 pt-6">
@@ -40,7 +42,15 @@ export default function Home() {
           </Text>
         </View>
       </View>
-
+      <View>
+        <Pressable
+          onPress={() => router.push("/applications")}
+          accessibilityRole="button"
+          className="h-14 items-center justify-center rounded-2xl border border-[#C9D2CC] bg-white active:opacity-80"
+        >
+          <Text className="text-base font-semibold text-[#183D37]">Add you new application</Text>
+        </Pressable>
+      </View>
       <View>
         <Pressable
           onPress={signOut}
@@ -53,6 +63,7 @@ export default function Home() {
           Thanks for being here.
         </Text>
       </View>
+
     </View>
   )
 }
