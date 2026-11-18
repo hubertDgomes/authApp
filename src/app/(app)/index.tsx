@@ -53,7 +53,7 @@ export default function Home() {
       </View>
       <View>
         <Pressable
-          onPress={() => router.push("/applications")}
+          onPress={() => router.push("/applications/AllApp")}
           accessibilityRole="button"
           className="h-14 items-center justify-center rounded-2xl border border-[#C9D2CC] bg-[#183D37] active:opacity-80"
         >

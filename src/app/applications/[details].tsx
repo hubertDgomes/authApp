@@ -216,6 +216,16 @@ export default function Details() {
               </View>
             ) : null}
 
+            <Pressable
+              onPress={() => router.push('/applications/AllApp')}
+              accessibilityRole="button"
+              className="mt-7 h-14 items-center justify-center rounded-2xl border border-[#C9D2CC] bg-[#183D37] active:opacity-80"
+            >
+              <Text className="text-base font-semibold text-white">
+                See all applications
+              </Text>
+            </Pressable>
+
             <Text className="mt-6 text-center text-xs text-[#849089]">
               Added {formatDate(application.createdAt)}
               {application.updatedAt
