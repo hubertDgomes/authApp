@@ -1,5 +1,14 @@
-import { useState } from 'react'
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from 'react-native'
+import { AuthContext } from '@/context/AuthContext'
+import { useContext, useState } from 'react'
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+
+const STATUS_OPTIONS = [
+  { label: 'Applied', value: 'Applied' },
+  { label: 'Interview', value: 'Interview' },
+  { label: 'Offer', value: 'Offer' },
+  { label: 'Rejected', value: 'Rejected' },
+  { label: 'Saved', value: 'Saved' },
+]
 
 export default function Applications() {
   const [application, setApplication] = useState({
@@ -7,16 +16,66 @@ export default function Applications() {
     role: '',
     title: '',
     link: '',
-    status: '',
+    status: 'Applied',
     appliedDate: '',
     platform: '',
+    description: ''
   })
+
+  const [loading, setLoading] = useState(false)
+  const API_URL = 'http://192.168.0.108:3000'
+
+  const {token} = useContext(AuthContext)
+
+  const handleSubmitApplication = async () => {
+    if (!application.company.trim() || !application.role.trim()) {
+      Alert.alert('Missing information', 'Company and role are required.')
+      return
+    }
+    if (loading) return
+
+    setLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/api/application`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(application),
+        credentials: "include"
+      })
+      const data = await res.json()
+      console.log(data)
+      if (!res.ok) {
+        Alert.alert("Alert", data.message)
+        return;
+      }
+      Alert.alert("Application Submitted!" , "You application has been saved.")
+      setApplication({
+        company: '',
+        role: '',
+        title: '',
+        link: '',
+        status: 'Applied',
+        appliedDate: '',
+        platform: '',
+        description: ''
+      })
+    }
+    catch (err: any) {
+      Alert.alert('Error', err.message)
+    } finally {
+      setLoading(false)
+    }
+
+  }
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS == "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-      style={{flex: 1}}
+      style={{ flex: 1 }}
       className=" bg-[#F5F4F0]">
       <ScrollView
         className="flex-1"
@@ -144,6 +203,31 @@ export default function Applications() {
                 autoCapitalize="words"
                 className="h-14 rounded-2xl border border-[#D7DDD8] bg-white px-4 text-base text-[#183D37]"
               />
+              <Text className="mb-2 mt-4 text-sm font-semibold text-[#294B43]">
+                Description
+              </Text>
+              <TextInput
+                value={application.description}
+                onChangeText={(description) =>
+                  setApplication({ ...application, description })
+                }
+                placeholder="Write the full job description"
+                placeholderTextColor="#98A39D"
+                autoCapitalize="words"
+                className="h-14 rounded-2xl border border-[#D7DDD8] bg-white px-4 text-base text-[#183D37]"
+              />
+            </View>
+            <View>
+              <Pressable
+                onPress={handleSubmitApplication}
+                accessibilityRole="button"
+                className="mt-7 h-14 items-center justify-center rounded-2xl border border-[#C9D2CC] bg-[#183D37] active:opacity-80"
+              >
+                {loading ? <ActivityIndicator /> :
+                  <>
+                    <Text className="text-base font-semibold text-white">Submit you application</Text>
+                  </>}
+              </Pressable>
             </View>
           </View>
         </View>

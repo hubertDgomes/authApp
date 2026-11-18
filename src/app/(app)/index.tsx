@@ -53,6 +53,15 @@ export default function Home() {
       </View>
       <View>
         <Pressable
+          onPress={() => router.push("/applications")}
+          accessibilityRole="button"
+          className="h-14 items-center justify-center rounded-2xl border border-[#C9D2CC] bg-[#183D37] active:opacity-80"
+        >
+          <Text className="text-base font-semibold text-white">Check all your recent applications</Text>
+        </Pressable>
+      </View>
+      <View>
+        <Pressable
           onPress={signOut}
           accessibilityRole="button"
           className="h-14 items-center justify-center rounded-2xl border border-[#C9D2CC] bg-white active:opacity-80"
