@@ -1,14 +1,7 @@
 import { AuthContext } from '@/context/AuthContext'
+import { useRouter } from 'expo-router'
 import { useContext, useState } from 'react'
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
-
-const STATUS_OPTIONS = [
-  { label: 'Applied', value: 'Applied' },
-  { label: 'Interview', value: 'Interview' },
-  { label: 'Offer', value: 'Offer' },
-  { label: 'Rejected', value: 'Rejected' },
-  { label: 'Saved', value: 'Saved' },
-]
 
 export default function Applications() {
   const [application, setApplication] = useState({
@@ -24,6 +17,7 @@ export default function Applications() {
 
   const [loading, setLoading] = useState(false)
   const API_URL = 'http://192.168.0.108:3000'
+  const router = useRouter()
 
   const {token} = useContext(AuthContext)
 
@@ -46,7 +40,7 @@ export default function Applications() {
         credentials: "include"
       })
       const data = await res.json()
-      console.log(data)
+      console.log(data._id)
       if (!res.ok) {
         Alert.alert("Alert", data.message)
         return;
@@ -61,6 +55,10 @@ export default function Applications() {
         appliedDate: '',
         platform: '',
         description: ''
+      })
+      router.push({
+        pathname: '/applications/[details]',
+        params : {details: data._id}
       })
     }
     catch (err: any) {
