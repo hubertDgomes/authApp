@@ -16,7 +16,7 @@ export default function Applications() {
   })
 
   const [loading, setLoading] = useState(false)
-  const API_URL = 'http://192.168.0.108:3000'
+  const API_URL = 'https://app-backend-tdms.vercel.app'
   const router = useRouter()
 
   const {token} = useContext(AuthContext)

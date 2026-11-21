@@ -73,7 +73,7 @@ export default function Details() {
   const [application, setApplication] = useState<ApplicationRecord | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const API_URL = 'http://192.168.0.108:3000'
+  const API_URL = 'https://app-backend-tdms.vercel.app'
 
   useEffect(() => {
     let active = true

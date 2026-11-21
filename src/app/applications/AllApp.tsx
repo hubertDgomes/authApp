@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native'
 
-const API_URL = 'http://192.168.0.108:3000'
+const API_URL = 'https://app-backend-tdms.vercel.app'
 
 type ApplicationRecord = {
   _id: string

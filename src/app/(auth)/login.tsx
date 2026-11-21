@@ -10,14 +10,27 @@ import {
   TextInput,
   View,
 } from 'react-native'
+import {
+  GoogleSignin,
+  isSuccessResponse,
+} from '@react-native-google-signin/google-signin'
+
+
+GoogleSignin.configure({
+    webClientId: '28692385004-2l23s7qv5cum514d7avfhcearn14brd0.apps.googleusercontent.com',
+  })
+
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const API_URL = 'http://192.168.0.108:3000'
+  const API_URL = 'https://app-backend-tdms.vercel.app'
   const router = useRouter()
   const { signIn } = useContext(AuthContext)
+  
+  
+
 
   const handleLogin = async () => {
     setLoading(true)
@@ -40,6 +53,47 @@ export default function Login() {
       await signIn(data.token)
     } catch (err: any) {
       Alert.alert('Error', err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    setLoading(true)
+
+    try {
+      await GoogleSignin.hasPlayServices()
+      const response = await GoogleSignin.signIn()
+
+      // The user closed the Google sign-in prompt.
+      if (!isSuccessResponse(response)) return
+
+      const credential = response.data.idToken
+      if (!credential) {
+        throw new Error('Google did not return an ID token')
+      }
+
+      const res = await fetch(`${API_URL}/api/googlelogin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential }),
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Google login failed')
+      }
+
+      if (typeof data.token !== 'string' || !data.token) {
+        throw new Error('Google login response did not include a valid token')
+      }
+
+      await signIn(data.token)
+    } catch (err: unknown) {
+      Alert.alert(
+        'Google login failed',
+        err instanceof Error ? err.message : 'Something went wrong',
+      )
     } finally {
       setLoading(false)
     }
@@ -130,6 +184,16 @@ export default function Login() {
               </Pressable>
             </Link>
           </View>
+          <Pressable
+            onPress={handleGoogleLogin}
+            disabled={loading}
+            accessibilityRole="button"
+            className="mt-3 h-14 items-center justify-center rounded-2xl border border-[#C9D2CC] bg-white active:opacity-80"
+          >
+            <Text className="text-base font-semibold text-[#183D37]">
+              Continue with Google
+            </Text>
+          </Pressable>
         </View>
       </ScrollView>
     </View>
